@@ -23,8 +23,8 @@ def initialize_strategy(CONTENT_PATH, VIS_METHOD, SETTING, dense=False):
     # initailize strategy (visualization method)
     with open(os.path.join(CONTENT_PATH, "config.json"), "r") as f:
         conf = json.load(f)
-    # VIS_METHOD = "DVI" 
-    config = conf["DVI"]
+
+    config = conf[VIS_METHOD]
     error_message = ""
     strategy = Trustvis(CONTENT_PATH, config)
     try:
