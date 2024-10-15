@@ -54,10 +54,6 @@ def initialize_strategy(CONTENT_PATH, VIS_METHOD, SETTING, dense=False):
             error_message += "Unsupported setting\n"
     except Exception as e:
         error_message += "mismatch in input vis method and current visualization model\n"
-
-    if config["VISUALIZATION"]["PREPROCESS"]:
-        print("visualizing embedding in initialize_strategy...")
-        strategy.visualize_embedding()
     
     return strategy, error_message
 

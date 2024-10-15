@@ -630,8 +630,7 @@ class TrustTrainer(SingleVisTrainer):
                 # non-boundary crossing
                 if non_boundary_mask.any():
                     umap_l, recon_l, temporal_l, loss = self.criterion(edge_to[non_boundary_mask], edge_from[non_boundary_mask], 
-                                               a_to[non_boundary_mask], a_from[non_boundary_mask], 
-                                               self.model)
+                                               a_to[non_boundary_mask], a_from[non_boundary_mask], self.model)
                     all_loss.append(loss.mean().item())
                     umap_losses.append(umap_l.item())
                     recon_losses.append(recon_l.item())

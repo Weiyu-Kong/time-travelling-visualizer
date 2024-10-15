@@ -302,6 +302,16 @@ def update_projection():
         
     # sys.path.append(CONTENT_PATH)
     context, error_message_context = initialize_backend(CONTENT_PATH, VIS_METHOD, SETTING)
+    
+    with open(os.path.join(CONTENT_PATH, "config.json"), "r") as f:
+        conf = json.load(f)
+
+    config = conf[VIS_METHOD]
+    if config["VISUALIZATION"]["PREPROCESS"]:
+        print("visualizing embedding in initialize_strategy...")
+        context.strategy.visualize_embedding()
+
+
     # use the true one
     # EPOCH = (iteration-1)*context.strategy.data_provider.p + context.strategy.data_provider.s
     EPOCH = int(iteration)

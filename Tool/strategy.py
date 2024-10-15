@@ -454,7 +454,7 @@ class Trustvis(StrategyAbstractClass):
     def __init__(self, CONTENT_PATH, config):
         super().__init__(CONTENT_PATH, config)
         self._init()
-        self.VIS_METHOD = "DVI"
+        self.VIS_METHOD = "Trustvis"
     
     def _init(self):
         sys.path.append(self.CONTENT_PATH)
@@ -567,7 +567,6 @@ class Trustvis(StrategyAbstractClass):
 
             t1 = time.time()
             print("length of boundary and pred_Same:",len(b_edge_to), len(edge_to))
-
             print('complex-construct:', t1-t0)
 
             probs = probs / (probs.max()+1e-3)
@@ -594,6 +593,7 @@ class Trustvis(StrategyAbstractClass):
             b_probs = b_probs[b_eliminate_zeros]
 
             b_dataset = DVIDataHandler(b_edge_to, b_edge_from, feature_vectors, attention,labels_boundary)
+
             b_n_samples = int(np.sum(S_N_EPOCHS * b_probs) // 1)
             print("b_n_samples",b_n_samples, n_samples)
             if len(b_edge_to) > pow(2,24):
@@ -602,9 +602,6 @@ class Trustvis(StrategyAbstractClass):
                 b_sampler = WeightedRandomSampler(b_probs, b_n_samples, replacement=True)
 
             b_edge_loader = DataLoader(b_dataset, batch_size=2000, sampler=b_sampler, num_workers=8, prefetch_factor=10)
-
-            
-
             #################################################### for border end  ############################################################
 
 
@@ -617,7 +614,7 @@ class Trustvis(StrategyAbstractClass):
             ########################################################################################################################
             #                                                       TRAIN                                                          #
             ########################################################################################################################
-            trainer = TrustTrainer(self.model,criterion, optimizer, lr_scheduler, edge_loader=edge_loader, combined_loader=combined_loader, boundary_loss=self.boundary_loss, DEVICE=self.DEVICE)
+            trainer = TrustTrainer(self.model,criterion, optimizer, lr_scheduler, edge_loader, self.DEVICE, combined_loader, self.boundary_loss)
             # trainer = DVITrainer(self.model, criterion, optimizer, lr_scheduler,edge_loader=edge_loader, DEVICE=self.DEVICE)
 
             t2=time.time()
@@ -660,9 +657,14 @@ class Trustvis(StrategyAbstractClass):
 
 
     def visualize_embedding(self):
+        print("Visualize_dmbedding in Trustvis...")
+        # print("[preprocess]")
         # self._preprocess()
+        print("[train]")
         self._train()
+        print("[visualize]")
         self._visualize()
+        print("[evaluate]")
         self._evaluate()
 
 class TimeVis(StrategyAbstractClass):
