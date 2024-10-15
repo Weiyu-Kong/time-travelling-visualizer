@@ -185,7 +185,7 @@ class DVILoss(nn.Module):
         self.lambd2 = lambd2
 
     def forward(self, edge_to, edge_from, a_to, a_from, curr_model):
-        
+        outputs = curr_model( edge_to, edge_from)
         embedding_to, embedding_from = outputs["umap"]
         recon_to, recon_from = outputs["recon"]
         # TODO stop gradient edge_to_ng = edge_to.detach().clone()

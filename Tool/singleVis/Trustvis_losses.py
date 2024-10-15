@@ -190,13 +190,12 @@ class BoundaryAwareLoss(nn.Module):
         outputs = model( edge_to, edge_from)
         embedding_to, embedding_from = outputs["umap"]
         recon_to, recon_from = outputs["recon"]
-        
+
         reconstruction_loss_to = F.mse_loss(recon_to, edge_to)
         reconstruction_loss_from = F.mse_loss(recon_from, edge_from)
         recon_loss = reconstruction_loss_to + reconstruction_loss_from
 
-        # umap_l = self.umap_loss(embedding_to, embedding_from, 3).to(self.device)
-        umap_l = self.umap_loss(embedding_to, embedding_from).to(self.device)
+        umap_l = self.umap_loss(embedding_to, embedding_from, 3).to(self.device)
 
         return self.umap_loss_w  * umap_l + self.recon_lsoo_w * recon_loss
 

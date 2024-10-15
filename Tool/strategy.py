@@ -1,6 +1,7 @@
 # TODO fix loading net, sys.append problem
 from abc import ABC, abstractmethod
 
+from singleVis.losses import reconstruction_loss, regularize_loss, umap_loss
 import torch
 import tensorflow as tf
 import sys
@@ -14,13 +15,12 @@ from umap.umap_ import find_ab_params
 
 from singleVis.custom_weighted_random_sampler import CustomWeightedRandomSampler
 from singleVis.SingleVisualizationModel import VisModel, tfModel
-from singleVis.losses import HybridLoss, SmoothnessLoss, UmapLoss, ReconstructionLoss, TemporalLoss, DVILoss, SingleVisLoss, umap_loss, reconstruction_loss, regularize_loss,DummyTemporalLoss
 from singleVis.edge_dataset import HybridDataHandler, DVIDataHandler, DataHandler, construct_edge_dataset
 from singleVis.trainer import HybridVisTrainer, DVITrainer, SingleVisTrainer
 from singleVis.data import DataProviderAbstractClass, NormalDataProvider, ActiveLearningDataProvider, DenseActiveLearningDataProvider
 from singleVis.spatial_edge_constructor import kcHybridSpatialEdgeConstructor, SingleEpochSpatialEdgeConstructor, kcSpatialEdgeConstructor, tfEdgeConstructor
 from singleVis.Trustvis_spatial_edge_constructor import TrustvisSpatialEdgeConstructor
-from singleVis.Trustvis_losses import BoundaryAwareLoss
+from singleVis.Trustvis_losses import BoundaryAwareLoss, DVILoss, DummyTemporalLoss, HybridLoss, ReconstructionLoss, SingleVisLoss, SmoothnessLoss, TemporalLoss, UmapLoss
 from singleVis.Trustvis_trainer import TrustTrainer
 from singleVis.temporal_edge_constructor import GlobalTemporalEdgeConstructor
 from singleVis.projector import DeepDebuggerProjector, DVIProjector, ProjectorAbstractClass, TimeVisProjector, ALProjector, tfDVIProjector, tfDVIDenseALProjector, TimeVisDenseALProjector, TrustVisProjector
@@ -542,9 +542,8 @@ class Trustvis(StrategyAbstractClass):
         for iteration in range(EPOCH_START, EPOCH_END+EPOCH_PERIOD, EPOCH_PERIOD):
             # Define DVI Loss
             if start_flag:
-                
                 temporal_loss_fn = DummyTemporalLoss(self.DEVICE)
-                criterion = DVILoss(self.umap_fn, self.recon_fn, temporal_loss_fn, lambd1=LAMBDA1, lambd2=0.0)
+                criterion = DVILoss(self.umap_fn, self.recon_fn, temporal_loss_fn, lambd1=LAMBDA1, lambd2=0.0, device=self.DEVICE)
                 start_flag = 0
             else:
                 # TODO AL mode, redefine train_representation
@@ -552,7 +551,7 @@ class Trustvis(StrategyAbstractClass):
                 curr_data = self.data_provider.train_representation(iteration)
                 npr = find_neighbor_preserving_rate(prev_data, curr_data, N_NEIGHBORS)
                 self.temporal_fn = TemporalLoss(w_prev, self.DEVICE)
-                criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr)
+                criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr, device=self.DEVICE)
             # Define training parameters
             optimizer = torch.optim.Adam(self.model.parameters(), lr=.01, weight_decay=1e-5)
             lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=4, gamma=.1)
