@@ -645,7 +645,8 @@ class TrustTrainer(SingleVisTrainer):
                 total_loss.backward()
                 # loss_new.backward()
                 self.optimizer.step()
-            
+                
+            print("successful")
             b_loss= sum(b_losses) / len(b_losses) if b_losses else 0
         
         else:

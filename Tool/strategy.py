@@ -478,8 +478,7 @@ class Trustvis(StrategyAbstractClass):
         
         ENCODER_DIMS = VISUALIZATION_PARAMETER["ENCODER_DIMS"]
         DECODER_DIMS = VISUALIZATION_PARAMETER["DECODER_DIMS"]
-
-        VIS_MODEL_NAME = 'trustvis'
+        VIS_MODEL_NAME = VISUALIZATION_PARAMETER["VIS_MODEL_NAME"]
 
         # define hyperparameters
         self.DEVICE = torch.device("cuda:{}".format(GPU_ID) if torch.cuda.is_available() else "cpu")
