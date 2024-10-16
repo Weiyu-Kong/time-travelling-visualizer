@@ -532,7 +532,7 @@ class Trustvis(StrategyAbstractClass):
         MAX_EPOCH = VISUALIZATION_PARAMETER["MAX_EPOCH"]
         VIS_MODEL_NAME = VISUALIZATION_PARAMETER["VIS_MODEL_NAME"]
         
-        start_flag = 1
+        start_flag = 0 #1 DEBUG
         prev_model = VisModel(ENCODER_DIMS, DECODER_DIMS)
         prev_model.load_state_dict(self.model.state_dict())
         for param in prev_model.parameters():
@@ -540,6 +540,12 @@ class Trustvis(StrategyAbstractClass):
         w_prev = dict(self.model.named_parameters())
 
         for iteration in range(EPOCH_START, EPOCH_END+EPOCH_PERIOD, EPOCH_PERIOD):
+            # DEBUG
+            if iteration == 1:
+                continue
+            elif iteration > 2:
+                break
+
             # Define DVI Loss
             if start_flag:
                 temporal_loss_fn = DummyTemporalLoss(self.DEVICE)
@@ -551,7 +557,12 @@ class Trustvis(StrategyAbstractClass):
                 curr_data = self.data_provider.train_representation(iteration)
                 npr = find_neighbor_preserving_rate(prev_data, curr_data, N_NEIGHBORS)
                 self.temporal_fn = TemporalLoss(w_prev, self.DEVICE)
-                criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr, device=self.DEVICE)
+                # criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr, device=self.DEVICE)
+
+                # KWY
+                npr_mean = np.mean(npr)
+                criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr_mean, device=self.DEVICE)
+                
             # Define training parameters
             optimizer = torch.optim.Adam(self.model.parameters(), lr=.01, weight_decay=1e-5)
             lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=4, gamma=.1)
