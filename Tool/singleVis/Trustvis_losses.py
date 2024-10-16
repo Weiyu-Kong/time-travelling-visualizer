@@ -28,7 +28,7 @@ class UmapLoss(nn.Module):
         self._a = _a,
         self._b = _b,
         self._repulsion_strength = repulsion_strength
-        self.DEVICE = torch.device(device)
+        self.device = device
 
     @property
     def a(self):
@@ -53,7 +53,7 @@ class UmapLoss(nn.Module):
         probabilities_distance = convert_distance_to_probability(
             distance_embedding, self.a, self.b
         )
-        probabilities_distance = probabilities_distance.to(self.DEVICE)
+        probabilities_distance = probabilities_distance.to(self.device)
 
         # set true probabilities based on negative sampling
         num_neg_samples = embedding_neg_to.shape[0]  # valied negative samples
@@ -61,7 +61,7 @@ class UmapLoss(nn.Module):
         probabilities_graph = torch.cat(
             (torch.ones(batch_size), torch.zeros(num_neg_samples)), dim=0,
         )
-        probabilities_graph = probabilities_graph.to(device=self.DEVICE)
+        probabilities_graph = probabilities_graph.to(self.device)
 
         # compute cross entropy
         (_, _, ce_loss) = compute_cross_entropy(
