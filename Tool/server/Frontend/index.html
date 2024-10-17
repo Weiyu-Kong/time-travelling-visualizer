@@ -687,7 +687,8 @@
                         console.log("newVal", newVal)
                         this.curr_pred = this.prediction_list[newVal];
                     }
-                    this.curr_label = this.label_name_dict[this.label_list[newVal]];
+                    //this.curr_label = this.label_name_dict[this.label_list[newVal]];
+                    this.curr_label = this.label_list[newVal];
                     this.confidence_dict = this.confidence_list[newVal]
                 }
             },
