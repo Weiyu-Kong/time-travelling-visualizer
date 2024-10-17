@@ -63,7 +63,7 @@ class DataProvider(DataProviderAbstractClass):
 
     @property
     def train_num(self):
-        with open(os.path.join(self.content_path, "Model", "{}_{}".format(self.epoch_name, self.s), "index.json"), "r") as f:
+        with open(os.path.join(self.content_path, "Model", "index.json"), "r") as f:
             idxs = json.load(f)
         return len(idxs)
 
@@ -174,7 +174,7 @@ class NormalDataProvider(DataProvider):
                                    map_location="cpu")
         training_data = training_data.to(self.DEVICE)
         for n_epoch in range(self.s, self.e + 1, self.p):
-            index_file = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, n_epoch), "index.json")
+            index_file = os.path.join(self.model_path, "index.json")
             index = load_labelled_data_index(index_file)
             training_data = training_data[index]
 
@@ -239,7 +239,6 @@ class NormalDataProvider(DataProvider):
     def train_representation(self, epoch):
         # load train data
         train_data_loc = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "train_data.npy")
-        # index_file = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "index.json")
         index_file = os.path.join(self.model_path, "index.json")
         try:
             train_data = np.load(train_data_loc)
@@ -254,7 +253,6 @@ class NormalDataProvider(DataProvider):
     def train_labels(self, epoch):
         # load train label
         training_data_loc = os.path.join(self.content_path, "Training_data", "training_dataset_label.pth")
-        # index_file = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "index.json")
         index_file = os.path.join(self.model_path, "index.json")
         try:
             training_labels = torch.load(training_data_loc, map_location="cpu")
@@ -322,7 +320,8 @@ class NormalDataProvider(DataProvider):
     
     def max_norm(self, epoch):
         train_data_loc = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "train_data.npy")
-        index_file = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "index.json")
+        # index_file = os.path.join(self.model_path, "{}_{:d}".format(self.epoch_name, epoch), "index.json")
+        index_file = os.path.join(self.model_path, "index.json")
         index = load_labelled_data_index(index_file)
         try:
             train_data = np.load(train_data_loc)
@@ -424,7 +423,7 @@ class ActiveLearningDataProvider(DataProvider):
             return None
     
     def get_labeled_idx(self, iteration):
-        index_file = os.path.join(self.model_path, "{}_{:d}".format(self.iteration_name, iteration), "index.json")
+        index_file = os.path.join(self.model_path, "index.json")
         lb_idxs = np.array(load_labelled_data_index(index_file))
         return lb_idxs
 
@@ -491,7 +490,7 @@ class ActiveLearningDataProvider(DataProvider):
         training_data = torch.load(os.path.join(training_data_path, "training_dataset_data.pth"),
                                    map_location="cpu")
         training_data = training_data.to(self.DEVICE)
-        index_file = os.path.join(self.model_path, "{}_{:d}".format(self.iteration_name, iteration), "index.json")
+        index_file = os.path.join(self.model_path, "index.json")
         index = load_labelled_data_index(index_file)
         training_data = training_data[index]
 
@@ -818,7 +817,7 @@ class DenseActiveLearningDataProvider(ActiveLearningDataProvider):
         training_data = training_data.to(self.DEVICE)
 
         for n_epoch in range(1, self.epoch_num+1, 1):
-            index_file = os.path.join(self.model_path, "{}_{}".format(self.iteration_name, iteration), "index.json")
+            index_file = os.path.join(self.model_path, "index.json")
             index = load_labelled_data_index(index_file)
             training_data = training_data[index]
 
@@ -922,7 +921,7 @@ class DenseActiveLearningDataProvider(ActiveLearningDataProvider):
     def train_labels(self, iteration):
         # load labelled train labels
         training_data_loc = os.path.join(self.content_path, "Training_data", "training_dataset_label.pth")
-        index_file = os.path.join(self.model_path, "{}_{:d}".format(self.iteration_name, iteration), "index.json")
+        index_file = os.path.join(self.model_path,  "index.json")
         lb_idxs = np.array(load_labelled_data_index(index_file))
         try:
             training_labels = torch.load(training_data_loc, map_location="cpu")
@@ -977,7 +976,7 @@ class DenseActiveLearningDataProvider(ActiveLearningDataProvider):
     
     def max_norm(self, iteration, epoch):
         train_data_loc = os.path.join(self.model_path, "{}_{}".format(self.iteration_name, iteration), "{}_{:d}".format(self.epoch_name, epoch), "train_data.npy")
-        index_file = os.path.join(self.model_path, "{}_{}".format(self.iteration_name, iteration), "index.json")
+        index_file = os.path.join(self.model_path, "index.json")
         index = load_labelled_data_index(index_file)
         try:
             train_data = np.load(train_data_loc)

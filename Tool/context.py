@@ -187,7 +187,7 @@ class VisContext(Context):
 
     def get_epoch_index(self, epoch_id):
         """get the training data index for an epoch"""
-        index_file = os.path.join(self.strategy.data_provider.model_path, "Epoch_{:d}".format(epoch_id), "index.json")
+        index_file = os.path.join(self.strategy.data_provider.model_path, "index.json")
         if os.path.exists(index_file):
             index = load_labelled_data_index(index_file)
             return index        
@@ -255,7 +255,7 @@ class ActiveLearningContext(VisContext):
 
     def get_epoch_index(self, iteration):
         """get the training data index for an epoch"""
-        index_file = os.path.join(self.strategy.data_provider.checkpoint_path(iteration), "index.json")
+        index_file = os.path.join(self.strategy.data_provider.model_path, "index.json")
         if os.path.exists(index_file):
             index = load_labelled_data_index(index_file)
             return index        
@@ -283,7 +283,7 @@ class ActiveLearningContext(VisContext):
 
         resume_path = self.strategy.data_provider.checkpoint_path(iteration)
 
-        idxs_lb = np.array(json.load(open(os.path.join(resume_path, "index.json"), "r")))
+        idxs_lb = np.array(json.load(open(os.path.join(self.strategy.data_provider.model_path, "index.json"), "r")))
         
         state_dict = torch.load(os.path.join(resume_path, "subject_model.pth"), map_location=torch.device('cpu'))
         task_model.load_state_dict(state_dict)
