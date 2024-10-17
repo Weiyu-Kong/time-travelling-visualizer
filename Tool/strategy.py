@@ -150,7 +150,6 @@ class DeepVisualInsight(StrategyAbstractClass):
         self.evaluator(Evaluator(self.data_provider, self.projector))
 
     def _preprocess(self):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         # Training parameter (subject model)
         TRAINING_PARAMETER = self.config["TRAINING"]
         LEN = TRAINING_PARAMETER["train_num"]
@@ -158,10 +157,10 @@ class DeepVisualInsight(StrategyAbstractClass):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
         B_N_EPOCHS = VISUALIZATION_PARAMETER["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = VISUALIZATION_PARAMETER["BOUNDARY"]["L_BOUND"]
-        if PREPROCESS:
-            self.data_provider._meta_data()
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
+
+        self.data_provider._meta_data()
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
     
     def _train(self):
         EPOCH_START = self.config["EPOCH_START"]
@@ -313,7 +312,6 @@ class tfDeepVisualInsight(StrategyAbstractClass):
         self.evaluator = Evaluator(self.data_provider, self.projector)
 
     def _preprocess(self):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         # Training parameter (subject model)
         TRAINING_PARAMETER = self.config["TRAINING"]
         LEN = TRAINING_PARAMETER["train_num"]
@@ -321,10 +319,10 @@ class tfDeepVisualInsight(StrategyAbstractClass):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
         B_N_EPOCHS = VISUALIZATION_PARAMETER["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = VISUALIZATION_PARAMETER["BOUNDARY"]["L_BOUND"]
-        if PREPROCESS:
-            self.data_provider._meta_data()
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
+
+        self.data_provider._meta_data()
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
     
     def _train(self):
         EPOCH_START = self.config["EPOCH_START"]
@@ -711,7 +709,6 @@ class TimeVis(StrategyAbstractClass):
         self.evaluator = Evaluator(self.data_provider, self.projector)
 
     def _preprocess(self):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         # Training parameter (subject model)
         TRAINING_PARAMETER = self.config["TRAINING"]
         LEN = TRAINING_PARAMETER["train_num"]
@@ -719,10 +716,10 @@ class TimeVis(StrategyAbstractClass):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
         B_N_EPOCHS = VISUALIZATION_PARAMETER["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = VISUALIZATION_PARAMETER["BOUNDARY"]["L_BOUND"]
-        if PREPROCESS:
-            self.data_provider._meta_data()
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
+
+        self.data_provider._meta_data()
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
     
     def _train(self):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
@@ -864,7 +861,6 @@ class DeepDebugger(StrategyAbstractClass):
         self.evaluator = Evaluator(self.data_provider, self.projector)
 
     def _preprocess(self):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         # Training parameter (subject model)
         TRAINING_PARAMETER = self.config["TRAINING"]
         LEN = TRAINING_PARAMETER["train_num"]
@@ -872,10 +868,10 @@ class DeepDebugger(StrategyAbstractClass):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
         B_N_EPOCHS = VISUALIZATION_PARAMETER["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = VISUALIZATION_PARAMETER["BOUNDARY"]["L_BOUND"]
-        if PREPROCESS:
-            self.data_provider._meta_data()
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
+
+        self.data_provider._meta_data()
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
     
     def _segment(self):
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
@@ -1036,15 +1032,13 @@ class DVIAL(StrategyAbstractClass):
         self.vis = visualizer(self.data_provider, self.projector, 200)
 
     def _preprocess(self, iteration):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         B_N_EPOCHS = self.config["VISUALIZATION"]["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = self.config["VISUALIZATION"]["BOUNDARY"]["L_BOUND"]
 
-        if PREPROCESS:
-            self.data_provider._meta_data(iteration)
-            LEN = len(self.data_provider.train_labels(iteration))
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
+        self.data_provider._meta_data(iteration)
+        LEN = len(self.data_provider.train_labels(iteration))
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
 
     def _train(self, iteration):
         S_N_EPOCHS = self.config["VISUALIZATION"]["S_N_EPOCHS"]
@@ -1170,15 +1164,13 @@ class tfDVIDenseAL(DenseAL):
         
 
     def _preprocess(self, iteration):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         B_N_EPOCHS = self.config["VISUALIZATION"]["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = self.config["VISUALIZATION"]["BOUNDARY"]["L_BOUND"]
 
-        if PREPROCESS:
-            self.data_provider._meta_data(iteration)
-            LEN = len(self.data_provider.train_labels(iteration))
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
+        self.data_provider._meta_data(iteration)
+        LEN = len(self.data_provider.train_labels(iteration))
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
 
     def _train(self, iteration):
         # TODO
@@ -1242,15 +1234,13 @@ class TimeVisDenseAL(DenseAL):
         
 
     def _preprocess(self, iteration):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
         B_N_EPOCHS = self.config["VISUALIZATION"]["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = self.config["VISUALIZATION"]["BOUNDARY"]["L_BOUND"]
 
-        if PREPROCESS:
-            self.data_provider._meta_data(iteration)
-            LEN = len(self.data_provider.train_labels(iteration))
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
+        self.data_provider._meta_data(iteration)
+        LEN = len(self.data_provider.train_labels(iteration))
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(iteration, LEN//10, l_bound=L_BOUND)
 
     def _train(self, iteration):
         # TODO
