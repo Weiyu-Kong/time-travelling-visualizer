@@ -305,12 +305,10 @@ def update_projection():
     
     with open(os.path.join(CONTENT_PATH, "config.json"), "r") as f:
         conf = json.load(f)
-
     config = conf[VIS_METHOD]
     if config["VISUALIZATION"]["PREPROCESS"]:
-        print("visualizing embedding in initialize_strategy...")
+        print("preprocess and train vismodel...")
         context.strategy.visualize_embedding()
-
 
     # use the true one
     # EPOCH = (iteration-1)*context.strategy.data_provider.p + context.strategy.data_provider.s
@@ -519,7 +517,8 @@ def filter():
     testing_data_number = context.strategy.config["TRAINING"]["test_num"]
 
     current_index = context.get_epoch_index(EPOCH)
-    selected_points = np.arange(training_data_number)[current_index]
+    if current_index != None:
+        selected_points = np.arange(training_data_number)[current_index]
     selected_points = np.concatenate((selected_points, np.arange(training_data_number, training_data_number + testing_data_number, 1)), axis=0)
     # selected_points = np.arange(training_data_number + testing_data_number)
     for key in predicates.keys():

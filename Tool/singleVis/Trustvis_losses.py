@@ -149,8 +149,9 @@ class TemporalLoss(nn.Module):
         super(TemporalLoss, self).__init__()
         self.prev_w = prev_w
         self.device = device
-        # for param_name in self.prev_w.keys():
-        #     self.prev_w[param_name] = self.prev_w[param_name].to(device=self.device, dtype=torch.float32)
+        # add this will lead to more than one device (why?)
+        for param_name in self.prev_w.keys():
+            self.prev_w[param_name] = self.prev_w[param_name].to(device=self.device, dtype=torch.float32)
 
     def forward(self, curr_module):
         loss = torch.tensor(0., requires_grad=True).to(self.device)
@@ -159,6 +160,7 @@ class TemporalLoss(nn.Module):
             # c = c + 1
             prev_param = self.prev_w[name]
             # tf dvi: diff = tf.reduce_sum(tf.math.square(w_current[j] - w_prev[j]))
+
             loss = loss + torch.sum(torch.square(curr_param-prev_param)).to(self.device)
             # loss = loss + torch.norm(curr_param-prev_param, 2)
         # in dvi paper, they dont have this normalization (optional)

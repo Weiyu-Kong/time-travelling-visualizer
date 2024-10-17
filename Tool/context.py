@@ -130,22 +130,31 @@ class VisContext(Context):
         return idxs
 
     def filter_type(self, type, epoch_id):
+        train_num = self.strategy.data_provider.train_num
+        test_num = self.strategy.data_provider.test_num
+
         if type == "train":
-            res = self.get_epoch_index(epoch_id)
+            index_lst = self.get_epoch_index(epoch_id)
+            if index_lst == None:
+                res = list(range(train_num))
+            else:
+                res = index_lst
+
         elif type == "test":
-            train_num = self.strategy.data_provider.train_num
-            test_num = self.strategy.data_provider.test_num
             res = list(range(train_num, train_num+ test_num, 1))
+
         elif type == "unlabel":
-            labeled = np.array(self.get_epoch_index(epoch_id))
-            train_num = self.strategy.data_provider.train_num
+            index_lst = self.get_epoch_index(epoch_id)
+            if index_lst == None:
+                labeled = np.array(range(train_num))
+            else:
+                labeled = np.array(index_lst)
+
             all_data = np.arange(train_num)
             unlabeled = np.setdiff1d(all_data, labeled)
             res = unlabeled.tolist()
         else:
             # all data
-            train_num = self.strategy.data_provider.train_num
-            test_num = self.strategy.data_provider.test_num
             res = list(range(0, train_num + test_num, 1))
         return res
     
@@ -179,9 +188,13 @@ class VisContext(Context):
     def get_epoch_index(self, epoch_id):
         """get the training data index for an epoch"""
         index_file = os.path.join(self.strategy.data_provider.model_path, "Epoch_{:d}".format(epoch_id), "index.json")
-        index = load_labelled_data_index(index_file)
-        return index
-    
+        if os.path.exists(index_file):
+            index = load_labelled_data_index(index_file)
+            return index        
+        else:
+            return None
+
+
     def get_max_iter(self):
         EPOCH_START = self.strategy.config["EPOCH_START"]
         EPOCH_END = self.strategy.config["EPOCH_END"]
@@ -243,8 +256,11 @@ class ActiveLearningContext(VisContext):
     def get_epoch_index(self, iteration):
         """get the training data index for an epoch"""
         index_file = os.path.join(self.strategy.data_provider.checkpoint_path(iteration), "index.json")
-        index = load_labelled_data_index(index_file)
-        return index
+        if os.path.exists(index_file):
+            index = load_labelled_data_index(index_file)
+            return index        
+        else:
+            return None
 
     def al_query(self, iteration, budget, strategy, acc_idxs, rej_idxs):
         """get the index of new selection from different strategies"""

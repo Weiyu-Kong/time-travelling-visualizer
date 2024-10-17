@@ -234,8 +234,8 @@ class DeepVisualInsight(StrategyAbstractClass):
 
             # save result
             save_dir = self.data_provider.model_path
-            trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
-            trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
+            trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
+            trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
             save_dir = os.path.join(self.data_provider.model_path, "Epoch_{}".format(iteration))
             trainer.save(save_dir=save_dir, file_name="{}".format(VIS_MODEL_NAME))
 
@@ -419,8 +419,8 @@ class tfDeepVisualInsight(StrategyAbstractClass):
             # save time result
             # TODO
             # save_dir = self.data_provider.model_path
-            # trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
-            # trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
+            # trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
+            # trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
     
     def _visualize(self):
         EPOCH_START = self.config["EPOCH_START"]
@@ -531,7 +531,7 @@ class Trustvis(StrategyAbstractClass):
         MAX_EPOCH = VISUALIZATION_PARAMETER["MAX_EPOCH"]
         VIS_MODEL_NAME = VISUALIZATION_PARAMETER["VIS_MODEL_NAME"]
         
-        start_flag = 0 #1 DEBUG
+        start_flag = 1
         prev_model = VisModel(ENCODER_DIMS, DECODER_DIMS)
         prev_model.load_state_dict(self.model.state_dict())
         for param in prev_model.parameters():
@@ -539,12 +539,6 @@ class Trustvis(StrategyAbstractClass):
         w_prev = dict(self.model.named_parameters())
 
         for iteration in range(EPOCH_START, EPOCH_END+EPOCH_PERIOD, EPOCH_PERIOD):
-            # DEBUG
-            if iteration == 1:
-                continue
-            elif iteration > 2:
-                break
-
             # Define DVI Loss
             if start_flag:
                 temporal_loss_fn = DummyTemporalLoss(self.DEVICE)
@@ -557,7 +551,6 @@ class Trustvis(StrategyAbstractClass):
                 npr = find_neighbor_preserving_rate(prev_data, curr_data, N_NEIGHBORS)
                 self.temporal_fn = TemporalLoss(w_prev, self.DEVICE)
                 # criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr, device=self.DEVICE)
-
                 # KWY
                 npr_mean = np.mean(npr)
                 criterion = DVILoss(self.umap_fn, self.recon_fn, self.temporal_fn, lambd1=LAMBDA1, lambd2=LAMBDA2*npr_mean, device=self.DEVICE)
@@ -632,8 +625,8 @@ class Trustvis(StrategyAbstractClass):
 
             # save result
             save_dir = self.data_provider.model_path
-            trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
-            trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
+            trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "complex_construction", str(iteration), t1-t0)
+            trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "training", str(iteration), t3-t2)
             save_dir = os.path.join(self.data_provider.model_path, "Epoch_{}".format(iteration))
             trainer.save(save_dir=save_dir, file_name="{}".format(VIS_MODEL_NAME))
 
@@ -664,16 +657,14 @@ class Trustvis(StrategyAbstractClass):
         for eval_epoch in eval_epochs:
             self.evaluator.save_epoch_eval(eval_epoch, N_NEIGHBORS, temporal_k=5, file_name="{}".format(EVALUATION_NAME))
 
-
     def visualize_embedding(self):
-        print("Visualize_dmbedding in Trustvis...")
-        # print("[preprocess]")
-        # self._preprocess()
-        print("[train]")
+        print("[Preprocess]")
+        self._preprocess()
+        print("[Train]")
         self._train()
-        print("[visualize]")
+        print("[Visualize]")
         self._visualize()
-        print("[evaluate]")
+        print("[Evaluate]")
         self._evaluate()
 
 class TimeVis(StrategyAbstractClass):
@@ -791,8 +782,8 @@ class TimeVis(StrategyAbstractClass):
         t3 = time.time()
 
         save_dir = self.data_provider.model_path
-        trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "complex_construction", t1-t0)
-        trainer.record_time(save_dir, "time_{}.json".format(VIS_MODEL_NAME), "training", t3-t2)
+        trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "complex_construction", t1-t0)
+        trainer.record_time(save_dir, "time_{}".format(VIS_MODEL_NAME), "training", t3-t2)
         trainer.save(save_dir=save_dir, file_name="{}".format(VIS_MODEL_NAME))
     
     def _visualize(self):
@@ -899,7 +890,7 @@ class DeepDebugger(StrategyAbstractClass):
         SEGMENTS = self.segmenter.segment()
         t1 = time.time()
         self.projector.segments = SEGMENTS
-        self.segmenter.record_time(self.data_provider.model_path, "time_{}.json".format(VIS_MODEL_NAME), t1-t0)
+        self.segmenter.record_time(self.data_provider.model_path, "time_{}".format(VIS_MODEL_NAME), t1-t0)
         print("Segmentation takes {:.1f} seconds.".format(round(t1-t0, 3)))
     
     def _train(self):
@@ -1106,7 +1097,7 @@ class DVIAL(StrategyAbstractClass):
         t3 = time.time()
 
         # save result
-        save_dir = os.path.join(self.data_provider.model_path, "time_{}.json".format(VIS_MODEL_NAME))
+        save_dir = os.path.join(self.data_provider.model_path, "time_{}".format(VIS_MODEL_NAME))
         if not os.path.exists(save_dir):
             evaluation = dict()
         else:
