@@ -28,19 +28,8 @@ class SummaryWriterAbstractClass(ABC):
     def get_logdir(self):
         """Returns the directory where event file will be written."""
         return self.log_dir
-    
-    @abstractmethod
-    def add_training_data(self, dataset):
-        pass
 
-    @abstractmethod
-    def add_testing_data(self, dataset):
-        pass
-
-    @abstractmethod
-    def add_checkpoint_data(self, relative_path, state_dict, idxs):
-        pass
-
+    # TODO
     # @abstractmethod
     # def add_source(self, ):
     #     pass
@@ -54,20 +43,19 @@ class SummaryWriter(SummaryWriterAbstractClass):
         self.batch_size = batch_size
         self.num_worker = num_worker
 
-    def write_all_data(self, train_dataloader, test_dataloader, state_dict, id, prev_id, index = None):
-        self.write_dataset(train_dataloader,test_dataloader)
-        self.write_checkpoint_data(state_dict)
-
-        if index == None:
-            index = list(range(len(train_dataloader)))
-        self.write_index_data(index)
-        
-        self.write_iteration_structure_data(id,prev_id)
-
-    def write_dataset(self, train_dataloader, test_dataloader):
+    # at start
+    def write_dataset(self, train_dataloader, test_dataloader, index = None):
         self.write_training_data(train_dataloader)
         self.write_testing_data(test_dataloader)
-        print('Finish writing dataset into training dynamics!')
+        self.trian_num = len(train_dataloader)
+        if index == None:
+            index = list(range(self.trian_num))
+        self.write_index_data(index)
+
+    # every epoch
+    def write_checkpoint(self, state_dict, epoch, prev_epoch):
+        self.write_checkpoint_data(state_dict,epoch)
+        self.write_iteration_structure_data(epoch,prev_epoch)
 
     def write_training_data(self, dataloader):
         trainset_data = None
@@ -85,6 +73,7 @@ class SummaryWriter(SummaryWriterAbstractClass):
         os.makedirs(training_path, exist_ok=True)
         torch.save(trainset_data, os.path.join(training_path, "training_dataset_data.pth"))
         torch.save(trainset_label, os.path.join(training_path, "training_dataset_label.pth"))
+        print('Finish writing train data into training dynamics!')
 
     def write_testing_data(self, dataloader):
         testset_data = None
@@ -101,33 +90,35 @@ class SummaryWriter(SummaryWriterAbstractClass):
         os.makedirs(testing_path, exist_ok=True)
         torch.save(testset_data, os.path.join(testing_path, "testing_dataset_data.pth"))
         torch.save(testset_label, os.path.join(testing_path, "testing_dataset_label.pth"))
+        print('Finish writing test data into training dynamics!')
+
     
-    def write_checkpoint_data(self, state_dict):
+    def write_checkpoint_data(self, state_dict, epoch):
         checkpoints_path = os.path.join(self.log_dir, "Model")
-        os.makedirs(checkpoints_path, exist_ok=True)
-        checkpoint_path = os.path.join(checkpoints_path, "Epoch_{}".format(id))
+        checkpoint_path = os.path.join(checkpoints_path, "Epoch_{}".format(epoch))
         os.makedirs(checkpoint_path, exist_ok=True)
         torch.save(state_dict, os.path.join(checkpoint_path, "subject_model.pth"))
         print('Finish writing checkpoint into training dynamics!')
 
         
     def write_index_data(self, index):
-        checkpoint_path = os.path.join(self.log_dir, "Model")
-        with open(os.path.join(checkpoint_path, "index.json"), "w") as f:
+        checkpoints_path = os.path.join(self.log_dir, "Model")
+        os.makedirs(checkpoints_path, exist_ok=True)
+        with open(os.path.join(checkpoints_path, "index.json"), "w") as f:
             json.dump(index, f)
             f.close()
 
-    def write_iteration_structure_data(self, id, prev_id):
+    def write_iteration_structure_data(self, epoch, prev_epoch):
         iteration_structure_path = os.path.join(self.log_dir, "iteration_structure.json")
-        if prev_id < 1:
-            iter_s = [{"value": id, "name": "Epoch", "pid": ""}]
+        if prev_epoch < 1:
+            iter_s = [{"value": epoch, "name": "Epoch", "pid": ""}]
             with open(iteration_structure_path, "w") as f:
                 json.dump(iter_s, f)
                 f.close()
         else:
             with open(iteration_structure_path,encoding='utf8')as fp:
                 json_data = json.load(fp)
-                json_data.append({'value': id, 'name': 'Epoch', 'pid': "{}".format(prev_id)})
+                json_data.append({'value': epoch, 'name': 'Epoch', 'pid': "{}".format(prev_epoch)})
                 fp.close()
             with open(iteration_structure_path,'w') as f:
                 json.dump(json_data, f)

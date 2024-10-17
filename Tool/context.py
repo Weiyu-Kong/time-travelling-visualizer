@@ -267,7 +267,6 @@ class ActiveLearningContext(VisContext):
         CONTENT_PATH = self.strategy.data_provider.content_path
         NUM_QUERY = budget
         NET = self.strategy.config["TRAINING"]["NET"]
-        DATA_NAME = self.strategy.config["DATASET"]
         TOTAL_EPOCH = self.strategy.config["TRAINING"]["total_epoch"]
         sys.path.append(CONTENT_PATH)
 
@@ -296,7 +295,6 @@ class ActiveLearningContext(VisContext):
         print('number of testing pool: {}'.format(n_test))
 
         if strategy == "Random":
-            print(DATA_NAME)
             print(strategy)
             print('================Round {:d}==============='.format(iteration+1))
             # query new samples
@@ -307,7 +305,6 @@ class ActiveLearningContext(VisContext):
             print("Query time is {:.2f}".format(t1-t0))
         
         elif strategy == "Uncertainty":
-            print(DATA_NAME)
             print(strategy)
             print('================Round {:d}==============='.format(iteration+1))
             samples = self.strategy.data_provider.train_representation(iteration)
@@ -322,7 +319,6 @@ class ActiveLearningContext(VisContext):
         
         elif strategy == "TBSampling":
             period = int(2/3*TOTAL_EPOCH)
-            print(DATA_NAME)
             print("TBSampling")
             print('================Round {:d}==============='.format(iteration+1))
             t0 = time.time()
@@ -332,7 +328,6 @@ class ActiveLearningContext(VisContext):
         
         elif strategy == "Feedback":
             period = int(2/3*TOTAL_EPOCH)
-            print(DATA_NAME)
             print("Feedback")
             print('================Round {:d}==============='.format(iteration+1))
             t0 = time.time()
@@ -368,7 +363,6 @@ class ActiveLearningContext(VisContext):
         # DEVICE = self.strategy.data_provider.DEVICE
         # NEW_ITERATION = self.get_max_iter() + 1
         # GPU = self.strategy.config["GPU"]
-        # DATA_NAME = self.strategy.config["DATASET"]
         # sys.path.append(CONTENT_PATH)
 
         # # loading neural network
