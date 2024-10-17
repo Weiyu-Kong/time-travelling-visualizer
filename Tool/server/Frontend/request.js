@@ -7,7 +7,39 @@ let headers = new Headers();
 headers.append('Content-Type', 'application/json');
 headers.append('Accept', 'application/json');
 
-// updateProjection
+function getTrainingDynamic(content_path, taskType) {
+    console.log(content_path, taskType)
+    fetch(`${window.location.href}getTrainingDynamic`, {
+        method: 'POST',
+        body: JSON.stringify({
+            "path": content_path, 
+            "resolution": 200,
+            "vis_method": window.vueApp.visMethod,
+            'setting': 'normal',
+            "content_path": content_path,
+            "predicates": {},
+            "TaskType": taskType,
+            "selectedPoints":window.vueApp.filter_index,
+        }),
+        headers: headers,
+        mode: 'cors'
+    })
+    .then(response => response.json())
+        .then(res => {  
+            window.vueApp.$message({
+                type: 'success',
+                message: `Training Dynamic Generated`
+            });
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        window.vueApp.isCanvasLoading = false
+        window.vueApp.$message({
+            type: 'error',
+            message: `Unknown Backend Error`
+          });
+    });
+}
 
 function updateProjection(content_path, iteration, taskType) {
 

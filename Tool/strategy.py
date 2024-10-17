@@ -502,18 +502,12 @@ class Trustvis(StrategyAbstractClass):
         self.boundary_loss = BoundaryAwareLoss(umap_loss=self.umap_fn,device=self.DEVICE)
 
     def _preprocess(self):
-        PREPROCESS = self.config["VISUALIZATION"]["PREPROCESS"]
-        # Training parameter (subject model)
-        TRAINING_PARAMETER = self.config["TRAINING"]
-        LEN = TRAINING_PARAMETER["train_num"]
-        # Training parameter (visualization model)
         VISUALIZATION_PARAMETER = self.config["VISUALIZATION"]
         B_N_EPOCHS = VISUALIZATION_PARAMETER["BOUNDARY"]["B_N_EPOCHS"]
         L_BOUND = VISUALIZATION_PARAMETER["BOUNDARY"]["L_BOUND"]
-        if PREPROCESS:
-            self.data_provider._meta_data()
-            if B_N_EPOCHS >0:
-                self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
+        self.data_provider._meta_data()
+        if B_N_EPOCHS >0:
+            self.data_provider._estimate_boundary(LEN//10, l_bound=L_BOUND)
     
     def _train(self):
         EPOCH_START = self.config["EPOCH_START"]

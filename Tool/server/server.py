@@ -276,6 +276,32 @@ def load_vectorDB_nl():
     return make_response(jsonify({}), 200)
 
 
+@app.route('/getTrainingDynamic', methods=["POST","GET"])
+@cross_origin()
+def get_training_dynamic():
+    res = request.get_json()
+    CONTENT_PATH = os.path.normpath(res['path'])
+    VIS_METHOD = res['vis_method']
+    SETTING = res["setting"]
+    print(CONTENT_PATH,VIS_METHOD,SETTING)
+
+    print("Start getting training dynamic:")
+    print("1. Preprocess")
+    print("2. Train")
+    print("3. Visualize")
+    print("4. Evaluate")
+
+    start = time.time()
+
+    context, error_message_context = initialize_backend(CONTENT_PATH, VIS_METHOD, SETTING)
+    context.strategy.visualize_embedding()
+
+    end = time.time()
+    print(f"Finish getting training dynamic! Duration: {end-start}")
+    return make_response(jsonify({"errorMessage": error_message_context
+                                  }), 200)
+
+
 @app.route('/updateProjection', methods=["POST", "GET"])
 @cross_origin()
 def update_projection():
@@ -302,13 +328,6 @@ def update_projection():
         
     # sys.path.append(CONTENT_PATH)
     context, error_message_context = initialize_backend(CONTENT_PATH, VIS_METHOD, SETTING)
-    
-    with open(os.path.join(CONTENT_PATH, "config.json"), "r") as f:
-        conf = json.load(f)
-    config = conf[VIS_METHOD]
-    if config["VISUALIZATION"]["PREPROCESS"]:
-        print("preprocess and train vismodel...")
-        context.strategy.visualize_embedding()
 
     # use the true one
     # EPOCH = (iteration-1)*context.strategy.data_provider.p + context.strategy.data_provider.s

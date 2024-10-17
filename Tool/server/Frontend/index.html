@@ -107,6 +107,10 @@
                     <el-input v-model="customContentPath"></el-input>
                 </div> -->
                 <el-divider></el-divider>
+                <el-button id="getTrainingDynamic" 
+                    style="background-color: #571792; color: #fff; width: 100%; margin-top: 10px;" @click="train">Get 
+                    Training Dynamic</el-button>
+                <el-divider></el-divider>
                 <el-button id="showVisResBtn"
                     style="background-color: #571792; color: #fff; width: 100%; margin-top: 10px;" @click="update">Load
                     Visualization Result</el-button>
@@ -522,6 +526,9 @@
                 ]
                 this.driver.defineSteps(steps)
                 this.driver.start()
+            },
+            train(){
+                getTrainingDynamic(this.contentPath, this.taskType)
             },
             update() {
                 this.isCanvasLoading = true
