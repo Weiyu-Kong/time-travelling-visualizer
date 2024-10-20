@@ -180,9 +180,8 @@ def get_train_test_label(context, EPOCH):
         train_labels = np.zeros(len(train_data), dtype=int)
     if test_labels is None:
         test_labels = np.zeros(len(test_data), dtype=int)
-    print("errorlabels", train_labels, test_labels)
-    labels = np.concatenate((train_labels, test_labels), axis=0).astype(int)
-        
+
+    labels = np.concatenate((train_labels, test_labels), axis=0).astype(int)        
     return labels
 
 def get_selected_points(context, predicates, EPOCH, training_data_number, testing_data_number):
@@ -296,12 +295,12 @@ def update_epoch_projection(context, EPOCH, predicates, TaskType, indicates):
     
     # load data and labels
     all_data = get_train_test_data(context, EPOCH)
-    labels = get_train_test_label(context, EPOCH)
+    all_labels = get_train_test_label(context, EPOCH)
     if len(indicates):
         all_data = all_data[indicates]
-        labels = labels[indicates]
+        all_labels = all_labels[indicates]
         
-    error_message = check_labels_match_alldata(labels, all_data, error_message)
+    error_message = check_labels_match_alldata(all_labels, all_data, error_message)
     
     # load or create embedding_2d
     embedding_2d = get_embedding(context, all_data, EPOCH)
@@ -333,7 +332,7 @@ def update_epoch_projection(context, EPOCH, predicates, TaskType, indicates):
 
     # load  label list, precidtion list, confidance
     CLASSES = np.array(context.strategy.config["CLASSES"])
-    label_list = CLASSES[labels].tolist()
+    label_list = CLASSES[all_labels].tolist() # ["dog", "cat", ...]
     label_name_dict = dict(enumerate(CLASSES))
     
     prediction_list = []

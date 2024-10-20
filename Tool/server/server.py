@@ -351,13 +351,12 @@ def update_projection():
     context, error_message_context = initialize_backend(CONTENT_PATH, VIS_METHOD, SETTING)
 
     # use the true one
-    # EPOCH = (iteration-1)*context.strategy.data_provider.p + context.strategy.data_provider.s
     EPOCH = int(iteration)
     
     embedding_2d, grid, decision_view, label_name_dict, label_color_list, label_list, max_iter, training_data_index, \
     testing_data_index, eval_new, prediction_list, selected_points, properties, error_message_projection, color_list, confidence_list = update_epoch_projection(context, EPOCH, predicates, TaskType,indicates)
     end = time.time()
-    print("label_colorlenUpdate", len(label_color_list))
+
     print("duration", end-start)
     # sys.path.remove(CONTENT_PATH)
     # add_line(API_result_path,['TT',username])
