@@ -42,16 +42,16 @@ class SummaryWriter(SummaryWriterAbstractClass):
         super().__init__(log_dir)
         self.batch_size = batch_size
         self.num_worker = num_worker
+        self.to_pil_image = transforms.ToPILImage()
 
     # at start
     def write_meta_data(self, train_dataloader, test_dataloader, index = None):
-        # xx_data.pth, xx_label.pth
+        # The order of sprites is aligned with the order of train/test_data.pth
+        os.makedirs(os.path.join(self.log_dir,'sprites'),exist_ok=True)
+
+        # train/test_data.pth, train/test_label.pth and sprites
         self.train_num = self._write_training_data(train_dataloader)
         self.test_num = self._write_testing_data(test_dataloader)
-        
-        # sprites
-        # Note that we should follow the order of dataloader instead of dataset because of shuffling
-        self._write_sprites(train_dataloader, test_dataloader)
 
         # index.json
         if index == None: 
@@ -65,11 +65,11 @@ class SummaryWriter(SummaryWriterAbstractClass):
 
 
     # ==================================================================
-    
     def _write_training_data(self, dataloader):
         trainset_data = None
         trainset_label = None
-        for batch in dataloader:
+        for batch_idx, batch in enumerate(dataloader):
+            # concat data to save
             inputs, targets = batch
             if trainset_data != None:
                 trainset_data = torch.cat((trainset_data, inputs), 0)
@@ -77,6 +77,12 @@ class SummaryWriter(SummaryWriterAbstractClass):
             else:
                 trainset_data = inputs
                 trainset_label = targets
+            
+            # save sprites
+            for i in range(inputs.size(0)):
+                img = self.to_pil_image(inputs[i])
+                img_path = os.path.join(self.log_dir,'sprites',f'{batch_idx*dataloader.batch_size + i}.png')
+                img.save(img_path)
 
         training_path = os.path.join(self.log_dir, "Training_data")
         os.makedirs(training_path, exist_ok=True)
@@ -88,7 +94,8 @@ class SummaryWriter(SummaryWriterAbstractClass):
     def _write_testing_data(self, dataloader):
         testset_data = None
         testset_label = None
-        for batch in dataloader:
+        for batch_idx,batch in dataloader:
+            # concat data to save
             inputs, targets = batch
             if testset_data is not None:
                 testset_data = torch.cat((testset_data, inputs), 0)
@@ -96,6 +103,13 @@ class SummaryWriter(SummaryWriterAbstractClass):
             else:
                 testset_data = inputs
                 testset_label = targets
+                
+            # save sprites
+            for i in range(inputs.size(0)):
+                img = self.to_pil_image(inputs[i])
+                img_path = os.path.join(self.log_dir,'sprites',f'{self.train_num + batch_idx*dataloader.batch_size + i}.png')
+                img.save(img_path)
+                
         testing_path = os.path.join(self.log_dir, "Testing_data")
         os.makedirs(testing_path, exist_ok=True)
         torch.save(testset_data, os.path.join(testing_path, "testing_dataset_data.pth"))
@@ -132,48 +146,3 @@ class SummaryWriter(SummaryWriterAbstractClass):
         with open(os.path.join(checkpoints_path, "index.json"), "w") as f:
             json.dump(index, f)
             f.close()
-
-    def _write_sprites(self, train_dataloader, test_dataloader):
-        os.makedirs(os.path.join(self.log_dir,'sprites'),exist_ok=True)
-        
-        to_pil_image = transforms.ToPILImage()
-
-        for batch_idx, (images, _) in enumerate(train_dataloader):
-            for i in range(images.size(0)):
-                img = to_pil_image(images[i])
-                img_path = os.path.join(self.log_dir,'sprites',f'{batch_idx*train_dataloader.batch_size + i}.png')
-                img.save(img_path)
-        
-        for batch_idx, (images, _) in enumerate(test_dataloader):
-            for i in range(images.size(0)):
-                img = to_pil_image(images[i])
-                img_path = os.path.join(self.log_dir,'sprites',f'{self.train_num + batch_idx*test_dataloader.batch_size + i}.png')
-                img.save(img_path)
-        print("Finish writing sprites!")
-    
-    # def _write_sprites_image(self, train_dataset, test_dataset):
-    #     sprites_path = os.path.join(self.log_dir,'sprites')
-    #     os.makedirs(sprites_path,exist_ok=True)
-    #     train_num = len(train_dataset)
-
-    #     def transform_to_tensor(img):
-    #         if isinstance(img, torch.Tensor):
-    #             return img
-    #         elif isinstance(img, Image.Image):
-    #             to_tensor = transforms.ToTensor()
-    #             img_tensor = to_tensor(img)
-    #             return img_tensor
-    #         else:
-    #             raise TypeError("Not a Tensor or Image in the dataset")
-
-    #     for idx, (img, label) in enumerate(train_dataset):
-    #         img = transform_to_tensor(img)
-    #         img = img.permute(1, 2, 0)  # 将张量维度从 (C, H, W) 转换为 (H, W, C)
-    #         img = Image.fromarray((img.numpy() * 255).astype('uint8'))  # 将值缩放到[0, 255]范围
-    #         img.save(os.path.join(self.log_dir,'sprites', f'{idx}.png'))
-
-    #     for idx, (img, label) in enumerate(test_dataset):
-    #         img = transform_to_tensor(img)
-    #         img = img.permute(1, 2, 0)  # 将张量维度从 (C, H, W) 转换为 (H, W, C)
-    #         img = Image.fromarray((img.numpy() * 255).astype('uint8'))  # 将值缩放到[0, 255]范围
-    #         img.save(os.path.join(self.log_dir,'sprites', f'{idx+train_num}.png'))

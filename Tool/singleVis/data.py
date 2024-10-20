@@ -47,7 +47,7 @@ class DataProviderAbstractClass(ABC):
         self.e = epoch_e
 
 class DataProvider(DataProviderAbstractClass):
-    def __init__(self, content_path, model, epoch_start, epoch_end, epoch_period, device, classes, epoch_name, verbose=1):
+    def __init__(self, content_path, model, epoch_start, epoch_end, epoch_period, device, classes, epoch_name, verbose=0):
         self.content_path = content_path
         self.model = model
         self.s = epoch_start
