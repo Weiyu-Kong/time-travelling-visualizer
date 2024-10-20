@@ -610,7 +610,7 @@ class TrustTrainer(SingleVisTrainer):
         ####### for conterfactural pairs
 
         if self.combined_loader != None:
-            t2 = tqdm(self.combined_loader, leave=True, total=len(self.combined_loader))
+            t2 = tqdm(self.combined_loader, leave=True, total=len(self.combined_loader), desc="train_step")
 
             for data in t2:
                 edge_to, edge_from, a_to, a_from, labels = data

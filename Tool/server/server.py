@@ -24,7 +24,6 @@ API_result_path = "./admin_API_result.csv"
 
 import time
 
-import numpy as np
 from pymilvus import (
     connections,
     utility,
@@ -275,7 +274,17 @@ def load_vectorDB_nl():
 
     return make_response(jsonify({}), 200)
 
-
+"""
+Func: for each epoch, train a visualization model and visualize it
+Request:{
+    path: content path
+    vis_method: trustvis...
+    setting: normal, active learning 
+}
+Response:{
+    errorMessage: error message
+}
+"""
 @app.route('/getTrainingDynamic', methods=["POST","GET"])
 @cross_origin()
 def get_training_dynamic():
@@ -302,6 +311,18 @@ def get_training_dynamic():
                                   }), 200)
 
 
+"""
+Func: load visualization result for this epoch
+Request:{
+    path: content path
+    vis_method: trustvis...
+    setting: normal, active learning
+    iteration: current iteration
+}
+Response:{
+    result: embedding2d...
+}
+"""
 @app.route('/updateProjection', methods=["POST", "GET"])
 @cross_origin()
 def update_projection():
@@ -1018,7 +1039,10 @@ def ContrastGUI():
     # return render_template("SilasIndex.html")
     return send_from_directory(app.static_folder, 'contrast_index.html')
 
-# Load Visualization Result
+
+"""
+Get iteration structure saved in "/.../training_dynamic/iteration_structure.json"
+"""
 @app.route('/get_itertaion_structure', methods=["POST", "GET"])
 @cross_origin()
 def get_tree():
@@ -1055,6 +1079,9 @@ def get_tree():
 
 app.route('/contrast/get_itertaion_structure', methods=["POST", "GET"])(get_tree)
 
+"""
+Given query, search in vectorDB and return top k results. Search what?
+"""
 @app.route('/indexSearch', methods=["POST", "GET"])
 @cross_origin()
 def index_search():
@@ -1214,6 +1241,7 @@ def query_miss_search():
     return make_response(jsonify({'result': mis_query_indices}), 200)
 
 
+
 @app.route('/addNewLbel', methods=["POST", "GET"])
 @cross_origin()
 def add_new_label():
@@ -1299,4 +1327,3 @@ if __name__ == "__main__":
         port = port + 1
 
     app.run(host=ip_address, port=port)
-    # app.run(host=ip_address, port=int(port))

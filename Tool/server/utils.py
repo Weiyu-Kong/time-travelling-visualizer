@@ -167,8 +167,8 @@ def get_train_test_data(context, EPOCH):
     train_data = context.train_representation_data(EPOCH)
     test_data = context.test_representation_data(EPOCH)
     all_data = np.concatenate((train_data, test_data), axis=0)
-    print(len(test_data))
-    print(len(train_data))
+    print("test_data length", len(test_data))
+    print("train_data length", len(train_data))
     return all_data
 
 def get_train_test_label(context, EPOCH):
@@ -293,24 +293,24 @@ def get_comparison_coloring(context_left, context_right, EPOCH_LEFT, EPOCH_RIGHT
 def update_epoch_projection(context, EPOCH, predicates, TaskType, indicates):
     # TODO consider active learning setting
     error_message = ""
-    start = time.time()
-    all_data = get_train_test_data(context, EPOCH)
     
+    # load data and labels
+    all_data = get_train_test_data(context, EPOCH)
     labels = get_train_test_label(context, EPOCH)
     if len(indicates):
         all_data = all_data[indicates]
         labels = labels[indicates]
         
-    
-    print('labels',labels)
     error_message = check_labels_match_alldata(labels, all_data, error_message)
     
+    # load or create embedding_2d
     embedding_2d = get_embedding(context, all_data, EPOCH)
     if len(indicates):
         indicates = [i for i in indicates if i < len(embedding_2d)]
         embedding_2d = embedding_2d[indicates]
-    print('all_data',all_data.shape,'embedding_2d',embedding_2d.shape)
-    print('indicates', indicates)
+        
+    print('all_data shape',all_data.shape,'embedding_2d shape',embedding_2d.shape)
+
     error_message = check_embedding_match_alldata(embedding_2d, all_data, error_message)
     
     training_data_number = context.strategy.config["TRAINING"]["train_num"]
@@ -318,30 +318,26 @@ def update_epoch_projection(context, EPOCH, predicates, TaskType, indicates):
     training_data_index = list(range(training_data_number))
     testing_data_index = list(range(training_data_number, training_data_number + testing_data_number))
     error_message = check_config_match_embedding(training_data_number, testing_data_number, embedding_2d, error_message)
-    end = time.time()
-    print("beforeduataion", end- start)
-    # return the image of background
-    # read cache if exists
-   
+
+    # load or create background figure
     grid, b_fig = get_grid_bfig(context, EPOCH,embedding_2d)
     # TODO fix its structure
+
+    # load visualization evaluation result    
     eval_new = get_eval_new(context, EPOCH)
-    start2 = time.time()
-    print("midquestion1", start2-end)
-    # coloring method    
+    
+    # load color list  
     label_color_list, color_list = get_coloring(context, EPOCH, "noColoring")
     if len(indicates):
         label_color_list = [label_color_list[i] for i in indicates]
 
-    start1 =time.time()
-    print("midquestion2",start1-start2)
+    # load  label list, precidtion list, confidance
     CLASSES = np.array(context.strategy.config["CLASSES"])
     label_list = CLASSES[labels].tolist()
     label_name_dict = dict(enumerate(CLASSES))
-
+    
     prediction_list = []
     confidence_list = []
-    # print("all_data",all_data.shape)
     all_data = all_data.reshape(all_data.shape[0],all_data.shape[1])
     if (TaskType == 'Classification'):
         # check if there is stored prediction and load
@@ -393,10 +389,6 @@ def update_epoch_projection(context, EPOCH, predicates, TaskType, indicates):
     #     highlightedPointIndices = np.where(squared_distances > squared_threshold)[0]
     #     print()
 
-    end1 = time.time()
-    print("midduration", start1-end)
-    print("endduration", end1-start1)
-    print("EMBEDDINGLEN", len(embedding_2d))
     return embedding_2d.tolist(), grid, b_fig, label_name_dict, label_color_list, label_list, max_iter, training_data_index, testing_data_index, eval_new, prediction_list, selected_points, properties,error_message, color_list, confidence_list
 
 def highlight_epoch_projection(context, EPOCH, predicates, TaskType,indicates):

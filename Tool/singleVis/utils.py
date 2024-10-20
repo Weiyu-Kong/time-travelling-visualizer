@@ -161,7 +161,7 @@ def batch_run(model, data, batch_size=200):
     data = data.to(dtype=torch.float)
     output = None
     n_batches = max(math.ceil(len(data) / batch_size), 1)
-    for b in tqdm.tqdm(range(n_batches)):
+    for b in tqdm.tqdm(range(n_batches),desc="get prediction", leave=True):
         r1, r2 = b * batch_size, (b + 1) * batch_size
         inputs = data[r1:r2]
         with torch.no_grad():
