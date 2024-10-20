@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import os
 import torch
 import json
-import transformers
+from torchvision import transforms
 
 class SummaryWriterAbstractClass(ABC):
     """Writes entries directly to event files in the log_dir to be
@@ -134,15 +134,19 @@ class SummaryWriter(SummaryWriterAbstractClass):
             f.close()
 
     def _write_sprites(self, train_dataloader, test_dataloader):
+        os.makedirs(os.path.join(self.log_dir,'sprites'),exist_ok=True)
+        
+        to_pil_image = transforms.ToPILImage()
+
         for batch_idx, (images, _) in enumerate(train_dataloader):
             for i in range(images.size(0)):
-                img = transformers.to_pil_image(images[i])
+                img = to_pil_image(images[i])
                 img_path = os.path.join(self.log_dir,'sprites',f'{batch_idx*train_dataloader.batch_size + i}.png')
                 img.save(img_path)
         
         for batch_idx, (images, _) in enumerate(test_dataloader):
             for i in range(images.size(0)):
-                img = transformers.to_pil_image(images[i])
+                img = to_pil_image(images[i])
                 img_path = os.path.join(self.log_dir,'sprites',f'{self.train_num + batch_idx*test_dataloader.batch_size + i}.png')
                 img.save(img_path)
         print("Finish writing sprites!")
@@ -173,10 +177,3 @@ class SummaryWriter(SummaryWriterAbstractClass):
     #         img = img.permute(1, 2, 0)  # 将张量维度从 (C, H, W) 转换为 (H, W, C)
     #         img = Image.fromarray((img.numpy() * 255).astype('uint8'))  # 将值缩放到[0, 255]范围
     #         img.save(os.path.join(self.log_dir,'sprites', f'{idx+train_num}.png'))
-
-                
-
-            
-
-
-
