@@ -6,7 +6,7 @@ In this section, we will explain how to obtain and visualize your own training d
 
 
 
-![image-20241019192349495](./SPEC_image/process.png)
+![image-20241019192349495](./process.png)
 
 #### Step 1: Train subject model
 
@@ -211,7 +211,7 @@ fill in the content path and visualization method on the left which should align
    - **[train vismodel]** : training a visualization model using the high-dimensional representations. (saved in `VIS_MODEL_NAME.pth`)
    - **[visualize]** : using the visualization model to map a data sample to 2D-space and save the figure as`img/VIS_MODEL_NAME_EPOCH.png`.
 
-![](./SPEC_image/interface1.png)
+![](./interface1.png)
 
 
 
@@ -259,7 +259,7 @@ training_dynamic/data_example_1
 
 Click `Load Visualization Result` button, and see how each sample is predicted in each epoch.
 
-![interface1](./SPEC_image/interface1.png)
+![interface1](./interface1.png)
 
 
 
