@@ -1,54 +1,19 @@
 # Training Dynamic Visualization
+
+
+## Overview
+
 Training Dynamic Visualization, a technique designed to visualize high-dimensional representations during the deep learning training process. In other words, our method is designed to transform the model training dynamics into an animation of canvas with colorful dots and territories.
 
 
-![ The results of our visualization technique for the image classifier training process from epoch10 to epoch200](image.png)
-# How to Use it?
+![ The results of our visualization technique for the image classifier training process from epoch10 to epoch200](./README_image/image.png)
 
-## Pull Our Code
-We strongly recommend that you store source code and training dynamics in the **Linux file system** instead of the Windows file system to get a complete user experience.
-```
-git clone https://github.com/code-philia/time-travelling-visualizer.git
-```
 
-The project structure looks as follow:
-```
-time-travelling-visualizer
-│   README.md
-|
-└───training_dynamic
-│   │   README.md
-    
-│   
-└───Vis
-|   │   singleVis | ...
-|   │   trustvis  | ...
-|   │   subject_model_eval.py
-|   │   trustvis_tempo.py 
-|   │   requirements.txt
-|   
-│   
-└───VisTool
-│   │   Backend
-│   |   |    ...
-│   |   |    server
-│   |   |    |   server.py
-│   |   |    ...
-│   │   Frontend
-│   |   |    ...
-│   |   |    tensorboard
-│   |   |    |   projector | ...
-│   |   |    ...
-└───
-```
 
-- training_dynamic fold is for storing the dataset
-- Vis fold is for training the visualization models
-- visTool fold is the interactive visualization tool's backend and frontend
+## Installation
 
-⚠️ Note that, the training_dynamic folder stores the training process and the target dataset. 
+#### Setup Environment
 
-# Environment Configuration
 1. create conda environment
 ```
 $ conda create -n visualizer python=3.7
@@ -60,7 +25,7 @@ For setting up PyTorch on that conda environment, use the guidelines provided at
 
 3. install requirements
 
-For linux developers, you can use the following command to install the required packages.
+For Linux developers, you can use the following command to install the required packages.
 ```
 $ (visualizer) ~/time-travelling-visualizer$ pip install -r requirements.txt
 ```
@@ -97,70 +62,93 @@ After completing the above steps, you should install Docker Compose by:
 $ (visualizer) ~/time-travelling-visualizer$ pip install docker-compose==1.29.2
 ```
 
-## Training Process Dataset (the training process of a model)
 
 
-You can train your classification model and save the training dynamics. For information on the structure of the training dynamics directory and the config file format, refer to the the [dataset's readme document](./training_dynamic/README.md). For details about training visualization model on training dynamics, refer to the [Vis Model's readme document](./Vis/README.md)
+#### Pull Our Code
 
-🍃 Training dynamics examples are also available on [Hugging Face](https://huggingface.co/datasets/code-philia/mtpnet) for you to download. 
+We strongly recommend that you store source code and training dynamics in the **Linux file system** instead of the Windows file system to get a complete user experience.
 
-1. download training dynamics example from huggingface
+```
+git clone https://github.com/code-philia/time-travelling-visualizer.git
+```
+
+The project structure looks as follow:
+
+- [ ] TO-DO: file structure for **new version** and **clean** project.
+
+- **`Tool`** folder contains the main logic of the project, including:
+  - training the visualization models of various visualization methods
+  - interactive visualization tool's back-end and front-end
+- **`training_dynamic`** folder is for storing the dataset which we will explain in detail later.
+
+
+
+## Quick Start
+
+We have prepared an example to quickly demonstrate the capabilities of the tool, it is available on [Hugging Face](https://huggingface.co/datasets/code-philia/mtpnet) for you to download.
+
+1. Download training dynamics example from Hugging Face
+
 ```
 ~/time-travelling-visualizer$ cd training_dynamic
 ~/time-travelling-visualizer/training_dynamic$ git lfs clone https://huggingface.co/datasets/code-philia/mtpnet.git
 ~/time-travelling-visualizer/training_dynamic$ unzip mtpnet/case_study_mnist_backdoor.zip
 ```
-2. unzip the dataset file
+
+2. Unzip the dataset file
 
 For linux user, you can unzip the example dataset into training_dynamic directory using the command
+
 ```
 ~/time-travelling-visualizer/training_dynamic$ unzip mtpnet/case_study_mnist_backdoor.zip
 ```
+
 For windows user, you can unzip the example dataset into training_dynamic directory using the command
+
 ```
 ~/time-travelling-visualizer/training_dynamic$ Expand-Archive mtpnet/case_study_mnist_backdoor.zip -DestinationPath .
 ```
 
-With this provided example, you can directly experience our tool.
+3. Run interactive visualizer tool
 
-If you want to train your own visualization model, refer to the the [visualization model's readme document](./Vis/README.md).
-
-# Run interactive Visualizer Tool
 ```
-~/time-travelling-visualizer$ cd /Tool/server
 ~/time-travelling-visualizer/Tool/server$ conda activate visualizer
+~/time-travelling-visualizer$ cd /Tool/server
 ```
+
 For linux and WSL users, you can use this command to start the tool with vector database (It will take a few minutes to start the docker container in the first time)
+
 ```
 ~/time-travelling-visualizer/Tool/server$ (visualizer) ./start_server.sh 
 ```
+
 Windows users can use the following command instead to run the tool
+
 ```
 ~/time-travelling-visualizer/Tool/server$ (visualizer) python server.py
 ```
+
 you will see: 
-```
-[+] Running 3/3 (WSL only)
-✔ Container milvus-minio       Started (WSL only)
-✔ Container milvus-etcd        Started (WSL only)
-✔ Container milvus-standalone  Started (WSL only)
-Starting milvus-minio ... done (Linux only) 
-Starting milvus-etcd  ... done (Linux only)
-Starting milvus-standalone ... done (Linux only)
-* Serving Flask app 'server'
-* Environment: production
-* Debug mode: off
-* Running on http://ip:port
 
-Access the user interface by opening http://ip:port in your web browser.
-```
+- [ ] TO-DO: screen shot for new version tool interface and console output.
 
-![Interactive Visualizer Tool](screenshot.png)
+
+
+
+
+## GUIDE
+
+To visualize your own training process, please refer to
+
+[SPEC]: SPEC.md
+
+
+
+
 
 
 
 ---
-
 
 # Citation
 
@@ -190,7 +178,7 @@ Access the user interface by opening http://ip:port in your web browser.
 ```
 
 ## Acknowledgement
+
 We appreciate all our collaborators for their contributions in this project:
 
 Xianglin Yang, Ruofan Liu, Guorui Qin, ... (the list is expanding)
-

@@ -30,12 +30,6 @@ class SummaryWriterAbstractClass(ABC):
         """Returns the directory where event file will be written."""
         return self.log_dir
 
-    # TODO
-    # @abstractmethod
-    # def add_source(self, ):
-    #     pass
-    # sprite images, text,...
-
 
 class SummaryWriter(SummaryWriterAbstractClass):
 
