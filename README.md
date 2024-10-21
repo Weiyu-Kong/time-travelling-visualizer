@@ -138,9 +138,7 @@ you will see:
 
 ## GUIDE
 
-To visualize your own training process, please refer to
-
-[SPEC]: SPEC.md
+To visualize your own training process, please refer to SPEC.md
 
 
 

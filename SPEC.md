@@ -259,7 +259,7 @@ training_dynamic/data_example_1
 
 Click `Load Visualization Result` button, and see how each sample is predicted in each epoch.
 
-![image-20241021134700192](./SPEC_image/image-20241021134700192.png)
+![interface1](./SPEC_image/interface1.png)
 
 
 
