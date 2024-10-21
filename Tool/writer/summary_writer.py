@@ -22,6 +22,7 @@ class SummaryWriterAbstractClass(ABC):
         Args:
             log_dir (string): Save directory location.
         """
+        os.makedirs(log_dir, exist_ok=True)
         log_dir = str(log_dir)
         self.log_dir = log_dir
     
@@ -46,6 +47,7 @@ class SummaryWriter(SummaryWriterAbstractClass):
 
     # at start
     def write_meta_data(self, train_dataloader, test_dataloader, index = None):
+        print('Writing meta data (data, labels, sprites)...')
         # The order of sprites is aligned with the order of train/test_data.pth
         os.makedirs(os.path.join(self.log_dir,'sprites'),exist_ok=True)
 
@@ -94,7 +96,7 @@ class SummaryWriter(SummaryWriterAbstractClass):
     def _write_testing_data(self, dataloader):
         testset_data = None
         testset_label = None
-        for batch_idx,batch in dataloader:
+        for batch_idx,batch in enumerate(dataloader):
             # concat data to save
             inputs, targets = batch
             if testset_data is not None:
